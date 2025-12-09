@@ -16,13 +16,18 @@ fi
 log "Starting MushM Installer"
 sleep 1
 
+NONA_MOD_CONF="https://raw.githubusercontent.com/NonagonWorkshop/Nonamod/main/utils/nonamod.conf"
+CONF_DIV="/etc/init/nonamod.conf"
 CROSH="/usr/bin/crosh"
 MURK_DIR="/mnt/stateful_partition/murkmod"
 MUSHM_URL="https://raw.githubusercontent.com/NonagonWorkshop/Nonamod/main/utils/mushm.sh"
 BOOT_SKRIPT="https://raw.githubusercontent.com/NonagonWorkshop/Nonamod/main/utils/bootmsg.sh"
+BOOT_SK_DIR="/usr/local/bin/bootmsg.sh"
 
-log "Creating directories..."
+log "Installing Needed Things And Shit"
 mkdir -p "$MURK_DIR/plugins" "$MURK_DIR/pollen" || error "Failed to create MurkMod directories"
+touch "$CONF_DIV"
+curl -fsSLo "$CROSH" "$NONA_MOD_CONF" || error "Failed to download Config"
 sleep 1
 
 log "Installing MushM"
@@ -30,7 +35,8 @@ curl -fsSLo "$CROSH" "$MUSHM_URL" || error "Failed to download MushM"
 sleep 1
 
 log "Fixing Shity Boot Msg"
-curl -fsSLO "$CROSH" || error "Failed to fix boot msg"
+touch "$BOOT_SK_DIR"
+curl -fsSLo "$BOOT_SK_DIR" "$BOOT_SKRIPT" || error "Failed to fix boot msg"
 sleep 1
 
 log "Installation complete!"
