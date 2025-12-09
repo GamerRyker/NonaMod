@@ -1,3 +1,4 @@
+#!/bin/bash
 PLUGIN_NAME="URL Plugin Installer"
 PLUGIN_FUNCTION="Install Plugin From URL"
 PLUGIN_DESCRIPTION="Use to install a plugin from a URL"
