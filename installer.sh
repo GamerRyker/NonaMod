@@ -25,7 +25,7 @@ BOOT_SKRIPT="https://raw.githubusercontent.com/NonagonWorkshop/Nonamod/main/util
 BOOT_SK_DIR="/usr/local/bin/bootmsg.sh"
 
 log "Installing Needed Things And Shit"
-mkdir -p "$MURK_DIR/plugins" "$MURK_DIR/pollen" || error "Failed to create MurkMod directories"
+mkdir -p "$MURK_DIR/plugins" "$MURK_DIR/pollen" || error "Failed To Installing Needed Things And Shit"
 touch "$CONF_DIV"
 curl -fsSLo "$CROSH" "$NONA_MOD_CONF" || error "Failed to download Config"
 sleep 1
