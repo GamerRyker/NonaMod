@@ -1,77 +1,100 @@
-#!/bin/bash
-# menu_plugin
+#!/usr/bin/env bash
+set -euo pipefail
+
+# to create a bootsplash tar.gz: 
+# yt-dlp https://www.youtube.com/watch?v=Fnz9ljn1cwE -f mp4 
+# ffmpeg -i <video>.mp4 -vf "fps=25" bootsplash/boot_splash_frame%03d.png 
+# tar -czvf bootsplash.tar.gz bootsplash/
+
 PLUGIN_NAME="Bootsplasher"
 PLUGIN_FUNCTION="Set custom boot splash"
-PLUGIN_DESCRIPTION="Simple plugin to set a custom boot splash from the user's downloads folder"
+PLUGIN_DESCRIPTION="Set a custom ChromeOS boot splash"
 PLUGIN_AUTHOR="rainestorme"
 PLUGIN_VERSION=1
 
-
-# to create a bootsplash tar.gz:
-# yt-dlp https://www.youtube.com/watch?v=Fnz9ljn1cwE -f mp4
-# ffmpeg -i <video>.mp4 -vf "fps=25" bootsplash/boot_splash_frame%03d.png
-# tar -czvf bootsplash.tar.gz bootsplash/
+ASSETS_DIR="/usr/share/chromeos-assets/images_100_percent"
+DOWNLOADS="/home/chronos/user/Downloads"
+TMP_DIR="/tmp"
+SSH_OPTS="-t -p 1337 -i /rootkey -oStrictHostKeyChecking=no"
 
 doas() {
-    ssh -t -p 1337 -i /rootkey -oStrictHostKeyChecking=no root@127.0.0.1 "$@"
+  ssh $SSH_OPTS root@127.0.0.1 "$@"
 }
 
-copy_bootsplash_static() {
-  echo "Copying bootsplash..."
-  doas 'rm /usr/share/chromeos-assets/images_100_percent/boot_splash_frame*.png'
-  doas 'cp /tmp/bootsplash.png /usr/share/chromeos-assets/images_100_percent/boot_splash_frame00.png'
-  rm -f /tmp/bootsplash.png
+clear_existing() {
+  doas "rm -f $ASSETS_DIR/boot_splash_frame*.png"
+}
+
+copy_static() {
+  echo "Installing static bootsplash..."
+  clear_existing
+  doas "cp $TMP_DIR/bootsplash.png $ASSETS_DIR/boot_splash_frame00.png"
+  rm -f "$TMP_DIR/bootsplash.png"
   echo "Done!"
 }
 
-copy_bootsplash_animated() {
-  echo "Copying bootsplash..."
-  doas 'rm /usr/share/chromeos-assets/images_100_percent/boot_splash_frame*.png'
-  doas 'cp /tmp/bootsplash/*.png /usr/share/chromeos-assets/images_100_percent/'
-  rm -rf /tmp/bootsplash
+copy_animated() {
+  echo "Installing animated bootsplash..."
+  clear_existing
+  doas "cp $TMP_DIR/bootsplash/*.png $ASSETS_DIR/"
+  rm -rf "$TMP_DIR/bootsplash"
   echo "Done!"
 }
 
 get_asset() {
-    curl -s -f "https://api.github.com/repos/rainestorme/murkmod/contents/$1" | jq -r ".content" | base64 -d
+  curl -sf "https://api.github.com/repos/rainestorme/murkmod/contents/$1" \
+    | jq -r ".content" \
+    | base64 -d
 }
 
-install() {
-    TMP=$(mktemp)
-    get_asset "$1" >"$TMP"
-    if [ "$?" == "1" ] || ! grep -q '[^[:space:]]' "$TMP"; then
-        echo "Failed to install $1 to $2"
-        rm -f "$TMP"
-        exit
-    fi
-    # Don't mv, that would break permissions
-    cat "$TMP" >"$2"
-    rm -f "$TMP"
+install_asset() {
+  local asset="$1"
+  local target="$2"
+  local tmp
+
+  tmp="$(mktemp)"
+  if ! get_asset "$asset" >"$tmp" || ! grep -q '[^[:space:]]' "$tmp"; then
+    echo "Failed to install asset: $asset"
+    rm -f "$tmp"
+    exit 1
+  fi
+
+  cat "$tmp" >"$target"
+  rm -f "$tmp"
 }
 
-set_custom() {
-  read -p 'Enter filename (downloads folder) > ' bootsplash
-  cp "/home/chronos/user/Downloads/$bootsplash" /tmp/bootsplash.png
-  copy_bootsplash_static
+set_custom_static() {
+  read -rp "Enter PNG filename from Downloads > " file
+  local src="$DOWNLOADS/$file"
+
+  [[ -f "$src" ]] || { echo "File not found."; exit 1; }
+
+  cp "$src" "$TMP_DIR/bootsplash.png"
+  copy_static
 }
 
 set_custom_animated() {
-  read -p 'Enter folder name (downloads folder) > ' bootsplash
-  cp -r "/home/chronos/user/Downloads/$bootsplash" /tmp/bootsplash
-  copy_bootsplash_animated
+  read -rp "Enter folder name from Downloads > " folder
+  local src="$DOWNLOADS/$folder"
+
+  [[ -d "$src" ]] || { echo "Folder not found."; exit 1; }
+
+  cp -r "$src" "$TMP_DIR/bootsplash"
+  copy_animated
 }
 
 restore_murkmod() {
-  echo "Grabbing murkmod bootsplash..."
-  install "chromeos-bootsplash-v2.png" /tmp/bootsplash.png
-  copy_bootsplash_static
+  echo "Restoring MurkMod default bootsplash..."
+  install_asset "chromeos-bootsplash-v2.png" "$TMP_DIR/bootsplash.png"
+  copy_static
 }
 
 get_bootsplash() {
-  echo "Installing bootsplash $1 to $2"
-  pushd /tmp/
-    curl -Lk https://raw.githubusercontent.com/rainestorme/bootsplashes/main/$1 -o $2
-  popd
+  local name="$1"
+  local out="$2"
+
+  echo "Downloading $name..."
+  curl -fsL "https://raw.githubusercontent.com/rainestorme/bootsplashes/main/$name" -o "$out"
 }
 
 choose_bootsplash() {
@@ -80,37 +103,41 @@ choose_bootsplash() {
   echo " 2. Valve Intro"
   echo " 3. PS2 Startup"
   echo " 4. Xbox Startup"
-  echo " 5. Gamecube Startup"
+  echo " 5. GameCube Startup"
   echo " 6. Apple Logo"
-  read -r -p "> (1-5): " choice
+  read -rp "> (1-6): " choice
+
   case "$choice" in
-  1) get_bootsplash "pipboy.tar.gz" /tmp/bootsplash.tar.gz ;;
-  2) get_bootsplash "valve.tar.gz" /tmp/bootsplash.tar.gz ;;
-  3) get_bootsplash "ps2.tar.gz" /tmp/bootsplash.tar.gz ;;
-  4) get_bootsplash "xbox.tar.gz" /tmp/bootsplash.tar.gz ;;
-  5) get_bootsplash "gamecube.tar.gz" /tmp/bootsplash.tar.gz ;;
-  6) get_bootsplash "apple.tar.gz" /tmp/bootsplash.tar.gz ;;
-  *) echo && echo "Invalid option, dipshit." && echo ;;
+    1) get_bootsplash "pipboy.tar.gz" "$TMP_DIR/bootsplash.tar.gz" ;;
+    2) get_bootsplash "valve.tar.gz" "$TMP_DIR/bootsplash.tar.gz" ;;
+    3) get_bootsplash "ps2.tar.gz" "$TMP_DIR/bootsplash.tar.gz" ;;
+    4) get_bootsplash "xbox.tar.gz" "$TMP_DIR/bootsplash.tar.gz" ;;
+    5) get_bootsplash "gamecube.tar.gz" "$TMP_DIR/bootsplash.tar.gz" ;;
+    6) get_bootsplash "apple.tar.gz" "$TMP_DIR/bootsplash.tar.gz" ;;
+    *) echo "Invalid option."; exit 1 ;;
   esac
-  tar -xzf /tmp/bootsplash.tar.gz -C /tmp/
-  copy_bootsplash_animated
+
+  tar -xzf "$TMP_DIR/bootsplash.tar.gz" -C "$TMP_DIR"
+  copy_animated
 }
 
-echo "Make sure your bootsplash is in PNG format!"
-echo "Animated bootsplashes must be in a folder named 'bootsplash' in your downloads folder!"
+echo "Make sure static bootsplashes are PNGs."
+echo "Animated bootsplashes must be in a folder named 'bootsplash'."
+echo
 echo "Select an option:"
 echo " 1. Set custom static bootsplash"
 echo " 2. Set custom animated bootsplash"
-echo " 3. Restore murkmod default bootsplash"
-echo " 4. Choose from pre-made bootsplashes"
-read -r -p "> (1-4): " choice
+echo " 3. Restore MurkMod default"
+echo " 4. Choose pre-made bootsplash"
+read -rp "> (1-4): " choice
+
 case "$choice" in
-1) set_custom ;;
-2) set_custom_animated ;;
-3) restore_murkmod ;;
-4) choose_bootsplash ;;
-*) echo && echo "Invalid option, dipshit." && echo ;;
+  1) set_custom_static ;;
+  2) set_custom_animated ;;
+  3) restore_murkmod ;;
+  4) choose_bootsplash ;;
+  *) echo "Invalid option." ;;
 esac
 
 sync
-exit
+exit 0
