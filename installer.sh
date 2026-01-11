@@ -21,7 +21,7 @@ CROSH="/usr/bin/crosh"
 MURK_DIR="/mnt/stateful_partition/murkmod"
 MUSHM_URL="https://raw.githubusercontent.com/NonagonWorkshop/Nonamod/main/utils/mushm.sh"
 BOOT_SKRIPT="https://raw.githubusercontent.com/NonagonWorkshop/Nonamod/main/utils/bootmsg.sh"
-BOOT_SK_DIR="/usr/local/bin/bootmsg.sh"
+BOOT_SK_DIR="/sbin/chromeos_startup"
 
 log "Installing Needed Things And Shit"
 mkdir -p "$MURK_DIR/plugins" "$MURK_DIR/pollen" || error "Failed To Installing Needed Things And Shit"
@@ -36,7 +36,7 @@ touch "$BOOT_SK_DIR"
 curl -fsSLo "$BOOT_SK_DIR" "$BOOT_SKRIPT" || error "Failed to fix boot msg"
 
 log "Installation complete!"
-echo -e "${YELLOW}Made by Star_destroyer11 and StarkMist111960${RESET}"
+echo -e "${YELLOW}Made by Star_destroyer11${RESET}"
 sleep 2
 
 
