@@ -110,10 +110,10 @@ main() {
     while true; do
         echo -ne "\033]0;mushm\007"
         cat <<-EOF
-(1) Root Shell                     (26) [EXPERIMENTAL] Firmware Utility
+(1) Root Shell                     (26) Firmware Utility
 (2) Chronos Shell                  (27) Check for updates Murkmod
 (3) Crosh                          (28) Check for updates MushM
-(4) Plugins                        (29) Tetris
+(4) Plugins
 (5) Install plugins                                
 (6) Uninstall plugins
 (7) Powerwash
@@ -130,7 +130,7 @@ main() {
 (18) Set mushm password
 (19) Remove mushm password
 (20) Reboot (wait 5s)
-(21) Install Gentoo Bootstrap (dev_install)
+(21) [EXPERIMENTAL] Install Gentoo Bootstrap (dev_install)
 (22) [EXPERIMENTAL] Update ChromeOS
 (23) [EXPERIMENTAL] Update Emergency Backup
 (24) [EXPERIMENTAL] Restore Emergency Backup Backup
@@ -169,8 +169,6 @@ EOF
         27) runjob do_updates && exit 0 ;;
         28) runjob do_mushm_update ;;
         400) runjob do_dev_updates && exit 0 ;;
-        f) runjob dev_fix ;;
-        29) runjob tetris ;;
         101) runjob hard_disable_nokill ;;
         111) runjob hard_enable_nokill ;;
         112) runjob ext_purge ;;
@@ -192,15 +190,6 @@ EOF
     done
 }
 
-tetris() {
-bash <(curl -L https://raw.githubusercontent.com/NonagonWorkshop/NonaMod/main/games/tetris.sh)
-}
-
-dev_fix() {
-doas cd / && rm -rf mnt/stateful_partition/murkmod
-mkdir mnt/stateful_partition/murkmod
-mkdir mnt/stateful_partition/murkmod/plugins
-}
 
 api_read_file() {
     echo "file to read?"
