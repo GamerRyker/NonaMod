@@ -32,7 +32,7 @@ touch "$BOOT_SK_DIR"
 curl -fsSLo "$BOOT_SK_DIR" "$BOOT_SKRIPT" || error "Failed to fix boot msg"
 
 log "Installation complete!"
-echo -e "${YELLOW}Made by Star_destroyer11${RESET}"
+echo -e "${YELLOW}Made by Star_destroyer11 and StarkMist111960 (to a lesser extent)${RESET}"
 sleep 2
 
 
