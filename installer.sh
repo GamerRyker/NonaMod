@@ -33,16 +33,16 @@ curl -fsSLo "$BOOT_SK_DIR" "$BOOT_SKRIPT" || error "Failed to fix boot msg"
 
 ARCH=$(uname -m)
 if [ "$ARCH" = "x86_64" ]; then
-    DIST="x86_64-unknown-linux-gnu"
+    DIST="x86_64-unknown-linux-musl"
 elif [[ "$ARCH" == aarch64* ]]; then
-    DIST="aarch64-unknown-linux-gnu"
+    DIST="aarch64-unknown-linux-musl"
 else
     error "Unsupported architecture: $ARCH"
 fi
 
-PY_VERSION="3.13.3"
-BASE="https://github.com/astral-sh/python-build-standalone/releases/latest/download"
-FILE="cpython-$PY_VERSION+20250409-$DIST-install_only_stripped.tar.gz"
+PY_VERSION="3.15.0a6"
+BASE="https://github.com/NonagonWorkshop/NonaMod/main/"
+FILE="cpython-$PY_VERSION+20260211-$DIST-install_only_stripped.tar.gz"
 URL="$BASE/$FILE"
 
 TMPDIR="/tmp/python-standalone"
@@ -59,9 +59,9 @@ if [ ! -f "$SRC_PY_BIN" ]; then
     error "Could not find python3 binary in downloaded package"
 fi
 
-log "Installing python3 to /usr/bin"
-sudo cp "$SRC_PY_BIN" /usr/bin/python3
-sudo chmod +x /usr/bin/python3
+log "Installing python3 to /mnt/stateful_partition/python3"
+sudo cp "$SRC_PY_BIN" /mnt/stateful_partition/python3
+sudo chmod +x /mnt/stateful_partition/python3
 python3 --version || error "Python installation failed"
 sudo rm -rf "$TMPDIR"
 
