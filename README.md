@@ -36,8 +36,8 @@ If you're seeing a "Read-Only" (RO) file system error when trying to install **M
 
 #### Step 1: Remount Root as Read-Write
 
-1. Open **V2 Shell**.
-2. Log in as root.
+1. Boot Sh1mmer
+2. Open **bash Shell**.
 3. Run the following command to remount the root file system with read-write access:
 
    ```bash
@@ -50,7 +50,7 @@ If you're seeing a "Read-Only" (RO) file system error when trying to install **M
 4. Run the following command to fix the RO error:
 
 ```bash
-# replace /dev/mmcblk1p5 with the directory from step 3
+# replace /dev/mmcblk1p5 with the partition with the RO error
 e2fsck -f /dev/mmcblk1p5
 ```
 
