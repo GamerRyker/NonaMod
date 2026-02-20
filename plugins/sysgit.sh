@@ -1,7 +1,7 @@
 #!bin/bash
 PLUGIN_NAME="Sysgit"
-PLUGIN_FUNCTION=" Gets and displays sys info"
-PLUGIN_DESCRIPTION="Get Sys info"
+PLUGIN_FUNCTION=" Gets and displays sys info."
+PLUGIN_DESCRIPTION="Get Sys info."
 PLUGIN_AUTHOR="Star_destroyer11"
 PLUGIN_VERSION=1
 
@@ -62,7 +62,7 @@ KERNEL=$(get_kernel)
 
 echo -e "${CYAN}"
 echo "==============================================="
-echo "          ChromeOS System Summary"
+echo "          ChromeOS System Information"
 echo "==============================================="
 echo -e "${RESET}"
 
