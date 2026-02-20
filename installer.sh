@@ -11,7 +11,7 @@ error(){ echo -e "${RED}[✖]${RESET} $1" >&2; exit 1; }
 
 [ "$EUID" -ne 0 ] && error "You must run this script as root."
 
-log "Starting MushM installer"
+log "Starting MushM installer."
 
 CROSH="/usr/bin/crosh"
 MURK_DIR="/mnt/stateful_partition/murkmod"
@@ -27,9 +27,9 @@ chmod +x "$BOOT_DIR"
 
 ARCH=$(uname -m)
 if [ "$ARCH" = "x86_64" ]; then
-    PY_URL="https://github.com/NonagonWorkshop/NonaMod/releases/download/pydl/cpython-3.15.0a5%2B20260203-x86_64-unknown-linux-musl-install_only_stripped"
+    PY_URL="https://github.com/NonagonWorkshop/NonaMod/releases/download/pydl/cpython-3.15.0a6%2B20260211-x86_64-unknown-linux-musl-install_only_stripped.tar"
 elif [[ "$ARCH" == aarch64* ]] || [[ "$ARCH" == arm64* ]]; then
-    PY_URL="https://github.com/NonagonWorkshop/NonaMod/releases/download/pydl/cpython-3.15.0a5%2B20260203-aarch64-unknown-linux-musl-install_only_stripped"
+    PY_URL="https://github.com/NonagonWorkshop/NonaMod/releases/download/pydl/cpython-3.15.0a6%2B20260211-aarch64-unknown-linux-musl-install_only_stripped.tar"
 else
     error "Unsupported architecture: $ARCH"
 fi
@@ -46,19 +46,29 @@ if [ ! -f /usr/bin/.rwtest ]; then
 fi
 rm -f /usr/bin/.rwtest
 
-log "Downloading raw Python binary."
-curl -fsSL -o /mnt/stateful_partition/python3 "$PY_URL" || error "Failed to download Python binary."
-chmod +x /mnt/stateful_partition/python3
+TMPDIR="/tmp/python"
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
+
+log "Downloading standalone Python."
+curl -L "$PY_URL" -o "$TMPDIR/python.tar" || error "Failed to download Python archive"
+
+log "Extracting Python."
+rm -rf /mnt/stateful_partition/python3
+mkdir -p /mnt/stateful_partition/python3
+tar -xf "$TMPDIR/python.tar" -C /mnt/stateful_partition/python3 --strip-components=1 || error "Failed to extract Python"
 
 rm -rf /usr/bin/python3
 rm -rf /usr/bin/python
 
-ln -sf /mnt/stateful_partition/python3 /usr/bin/python3
-ln -sf /mnt/stateful_partition/python3 /usr/bin/python
+ln -sf /mnt/stateful_partition/python3/bin/python3 /usr/bin/python3
+ln -sf /mnt/stateful_partition/python3/bin/python3 /usr/bin/python
 
 log "Testing Python installation."
 python3 --version || error "Python installation failed."
 
-log "Installation complet.e"
+rm -rf "$TMPDIR"
+
+log "Installation complete."
 echo -e "${YELLOW}Made by Star_destroyer11 and StarkMist111960${RESET}"
 sleep 2
