@@ -60,7 +60,6 @@ runjob() {
     trap '' INT
     clear
 }
-
 swallow_stdin() {
     while read -t 0 notused; do
         read input
