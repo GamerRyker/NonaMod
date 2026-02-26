@@ -25,6 +25,15 @@ curl -fsSLo "$CROSH" "$MUSHM_URL" || error "Failed to download MushM."
 curl -fsSLo "$BOOT_DIR" "$BOOT_SCRIPT" || error "Failed to download boot script."
 chmod +x "$BOOT_DIR"
 
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then
+    PY_URL="https://github.com/indygreg/python-build-standalone/releases/download/20260211/cpython-3.15.0a6%2B20260211-x86_64-unknown-linux-musl-install_only_stripped.tar.zst"
+elif [[ "$ARCH" == aarch64* ]] || [[ "$ARCH" == arm64* ]]; then
+    PY_URL="https://github.com/indygreg/python-build-standalone/releases/download/20260211/cpython-3.15.0a6%2B20260211-aarch64-unknown-linux-musl-install_only_stripped.tar.zst"
+else
+    error "Unsupported architecture: $ARCH"
+fi
+
 touch /usr/bin/.rwtest 2>/dev/null
 if [ ! -f /usr/bin/.rwtest ]; then
     warn "Root filesystem is read-only. Making it writable."
@@ -37,6 +46,29 @@ if [ ! -f /usr/bin/.rwtest ]; then
 fi
 rm -f /usr/bin/.rwtest
 
+TMPDIR="/tmp/python"
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
+
+log "Downloading standalone Python."
+curl -L "$PY_URL" -o "$TMPDIR/python.tar.zst" || error "Failed to download Python archive"
+
+log "Extracting Python."
+rm -rf /mnt/stateful_partition/python3
+mkdir -p /mnt/stateful_partition/python3
+tar -I zstd -xf "$TMPDIR/python.tar.zst" -C /mnt/stateful_partition/python3 --strip-components=1 || error "Failed to extract Python"
+
+rm -rf /usr/bin/python3
+rm -rf /usr/bin/python
+
+ln -sf /mnt/stateful_partition/python3/bin/python3 /usr/bin/python3
+ln -sf /mnt/stateful_partition/python3/bin/python3 /usr/bin/python
+
+log "Testing Python installation."
+python3 --version || error "Python installation failed."
+
+rm -rf "$TMPDIR"
+
 log "Installation complete."
-echo -e "${YELLOW}Beta and Test Version of NonaMod Made by GamerRyker${RESET}"
+echo -e "${YELLOW}Revised and Tested by: GamerRyker${RESET}"
 sleep 2
