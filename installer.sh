@@ -27,7 +27,7 @@ chmod +x "$BOOT_DIR"
 
 ARCH=$(uname -m)
 if [ "$ARCH" = "x86_64" ]; then
-    PY_URL="https://github.com/indygreg/python-build-standalone/releases/download/20260211/cpython-3.15.0a6%2B20260211-x86_64-unknown-linux-musl-install_only_stripped.tar.zst"
+    PY_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260211/cpython-3.15.0a6+20260211-x86_64-unknown-linux-musl-install_only_stripped.tar.gz"
 elif [[ "$ARCH" == aarch64* ]] || [[ "$ARCH" == arm64* ]]; then
     PY_URL="https://github.com/indygreg/python-build-standalone/releases/download/20260211/cpython-3.15.0a6%2B20260211-aarch64-unknown-linux-musl-install_only_stripped.tar.zst"
 else
