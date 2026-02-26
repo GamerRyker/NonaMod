@@ -70,5 +70,5 @@ python3 --version || error "Python installation failed."
 rm -rf "$TMPDIR"
 
 log "Installation complete."
-echo -e "${YELLOW}Revised and Tested by: GamerRyker${RESET}"
+echo -e "${YELLOW}Revised and Tested by GamerRyker${RESET}"
 sleep 2
