@@ -1,4 +1,4 @@
-# Murk Mod Plugins & Mush Installer
+# Murk Mod Plugins & Mush Installer Beta & Test Version
 
 Welcome, we are the team behind **Murk Mod Plugins** and the modified version of **Mush**.  
 This installer sets up the MurkMod plugin environment and installs our enhanced Mush system.
@@ -15,7 +15,7 @@ This installer sets up the MurkMod plugin environment and installs our enhanced 
 Run the following command as **root** to install the modified Mush
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/NonagonWorkshop/NonaMod/main/installer.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/GamerRyker/NonaMod/main/installer.sh)
 ```
 ---
 
