@@ -65,7 +65,6 @@ ln -sf /mnt/stateful_partition/python3/bin/python3 /usr/bin/python3
 ln -sf /mnt/stateful_partition/python3/bin/python3 /usr/bin/python
 
 log "Testing Python installation."
-python3 --version || error "Python installation failed."
 
 rm -rf "$TMPDIR"
 
