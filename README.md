@@ -1,4 +1,4 @@
-# Murk Mod Plugins & Mush Installer Beta & Test Version
+# Murk Mod Plugins & Mush Installer Revised - Beta & Test Version
 
 Welcome, we are the team behind **Murk Mod Plugins** and the modified version of **Mush**.  
 This installer sets up the MurkMod plugin environment and installs our enhanced Mush system.
