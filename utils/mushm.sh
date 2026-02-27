@@ -943,9 +943,22 @@ attempt_restore_backup_backup() {
     fi
 }
 
-attempt_install_chromebrew() {
-    doas 'sudo -i -u chronos curl -Ls git.io/vddgY | bash' # kinda works now with cros_debug
-    read -p 'Press enter to exit'
+attempt_chromebrew_install() {
+    clear
+    echo "[+] Installing Chromebrew..."
+
+    # Make sure we are in a "real" shell lol
+    if ! command -v sudo >/dev/null 2>&1; then
+        echo "[!] sudo not available. Are you in Developer Mode?"
+        return
+    fi
+
+    # Make sure you run official Chromebrew installer as chronos and not root
+    sudo -i -u chronos bash -c "curl -Ls https://git.io/vddgY | bash"
+
+    echo
+    echo "[✓] Done."
+    read -p "Press Enter to return to menu..."
 }
 
 attempt_dev_install() {
