@@ -163,7 +163,7 @@ EOF
         22) runjob attempt_chromeos_update ;;
         23) runjob attempt_backup_update ;;
         24) runjob attempt_restore_backup_backup ;;
-        25) runjob attempt_chromebrew_install ;;
+        25) attempt_chromebrew_install ;;
         26) runjob run_firmware_util ;;
         27) runjob do_updates && exit 0 ;;
         28) runjob do_mushm_update ;;
